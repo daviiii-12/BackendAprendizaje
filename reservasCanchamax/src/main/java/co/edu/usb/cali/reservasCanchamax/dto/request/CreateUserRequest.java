@@ -1,32 +1,23 @@
 package co.edu.usb.cali.reservasCanchamax.dto.request;
 
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+@Data
 @Builder
-@Getter
-
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateUserRequest {
 
-
-    @Column(name = "full_name", nullable = false, length = 120)
+    // Solo los datos que necesitas que el usuario envíe para registrarse
     private String fullName;
-
-    @Column(name = "email", nullable = false, length = 255, unique = true)
     private String email;
-
-    @Column(name = "phone", length = 30)
     private String phone;
 
-    @Column(name = "is_active", nullable = false)
+    // Si requieres que envíen el estado activo desde el inicio, puedes dejarlo.
+    // Si no, el backend debería asignarlo por defecto a "true" al crear el usuario.
     private Boolean isActive;
 
-    @Column(name = "created_at", nullable = false)
-    private Timestamp createdAt;
-
-    @Column(name = "updated_at", nullable = false)
-    private Timestamp updatedAt;
 }
-

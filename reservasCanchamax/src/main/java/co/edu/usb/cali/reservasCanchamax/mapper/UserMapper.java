@@ -1,44 +1,42 @@
 package co.edu.usb.cali.reservasCanchamax.mapper;
 
+import co.edu.usb.cali.reservasCanchamax.dto.request.CreateUserRequest;
 import co.edu.usb.cali.reservasCanchamax.dto.response.GetUserResponse;
 import co.edu.usb.cali.reservasCanchamax.model.User;
 
-import java.util.ArrayList;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class UserMapper {
 
     // MÉTODO 1: Convierte un solo User a GetUserResponse
     public static GetUserResponse entityToGetUserResponse(User user) {
-        // instanciar nuevo objeto
-        GetUserResponse getUserResponse = GetUserResponse.builder()
+        return GetUserResponse.builder()
                 .id(user.getId())
                 .fullName(user.getFullName())
                 .build();
-
-        return getUserResponse;
     }
 
     // MÉTODO 2: Convierte una lista de Users a una lista de GetUserResponse
     public static List<GetUserResponse> entityToListGetUserResponse(List<User> users) {
-
-        /* // VERSIÓN ANTIGUA CON FOR (Comentada)
-        List<GetUserResponse> getUserResponseList = new ArrayList<>();
-        // iterar sobre lista de objetos y agregarlos a la lista objetos userResponse
-        for(int i = 0; i < users.size(); i++){
-            // por cada iteraccion obtener el objeto actual
-            User user = users.get(i);
-            GetUserResponse getUserResponse = entityToGetUserResponse(user);
-            // agregar el objeto dto get user
-            getUserResponseList.add(getUserResponse);
-        }
-        // retornar la lista Dto GetuserResponse
-        return getUserResponseList;
-        */
-
-        // VERSIÓN MODERNA Y CORTA CON STREAMS (Funcional)
         return users.stream()
                 .map(UserMapper::entityToGetUserResponse)
                 .toList();
+    }
+
+    // MÉTODO 3: Convierte un CreateUserRequest a una entidad User con fechas automáticas
+    public static User createUserRequestToEntity(CreateUserRequest createUserRequest) {
+        // Genero la fecha y hora actual del sistema
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        return User.builder()
+                .fullName(createUserRequest.getFullName())
+                .email(createUserRequest.getEmail())
+                .phone(createUserRequest.getPhone())
+                .isActive(createUserRequest.getIsActive() != null ? createUserRequest.getIsActive() : true)
+                // Asigno las fechas requeridas por la base de datos
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
     }
 }
