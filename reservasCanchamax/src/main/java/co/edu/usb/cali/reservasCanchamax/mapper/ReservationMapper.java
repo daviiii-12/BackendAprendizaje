@@ -4,9 +4,10 @@ import co.edu.usb.cali.reservasCanchamax.dto.request.CreateReservationRequest;
 import co.edu.usb.cali.reservasCanchamax.dto.response.CreateReservationResponse;
 import co.edu.usb.cali.reservasCanchamax.model.Court;
 import co.edu.usb.cali.reservasCanchamax.model.Reservation;
+import co.edu.usb.cali.reservasCanchamax.model.ReservationStatus;
 import co.edu.usb.cali.reservasCanchamax.model.User;
 
-import java.sql.Timestamp; // Para manejar las fechas
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +20,7 @@ public class ReservationMapper {
                 .userId(Objects.nonNull(reservation.getUser()) ? reservation.getUser().getId() : null)
                 .startTime(reservation.getStartTime())
                 .endTime(reservation.getEndTime())
-                .status(reservation.getStatus())
+                .status(reservation.getStatus() != null ? reservation.getStatus().name() : null)
                 .notes(reservation.getNotes())
                 .build();
     }
@@ -31,7 +32,6 @@ public class ReservationMapper {
     }
 
     public static Reservation createReservationRequestToEntity(CreateReservationRequest request, Court court, User user) {
-        // Genero la fecha y hora exacta de este momento
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         return Reservation.builder()
@@ -40,8 +40,7 @@ public class ReservationMapper {
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .notes(request.getNotes())
-                .status("BOOKED")
-                // ¡AQUÍ ESTÁ EL TRUCO! Asigno las fechas para que la BD no me las rebote
+                .status(ReservationStatus.BOOKED)
                 .createdAt(now)
                 .updatedAt(now)
                 .build();

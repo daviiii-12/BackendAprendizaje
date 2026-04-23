@@ -5,11 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "reservations")
+@Table(name="reservations")
 @Data
 @Builder
 @AllArgsConstructor
@@ -38,8 +40,12 @@ public class Reservation {
     @Column(name = "end_time", nullable = false)
     private Timestamp endTime;
 
+    // ¡La solución definitiva para PostgreSQL!
+    // Le digo a Hibernate que convierta el texto al tipo ENUM nativo de la base de datos
+    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "status", nullable = false)
-    private String status;
+    private ReservationStatus status;
 
     @Column(name = "notes")
     private String notes;
@@ -49,5 +55,4 @@ public class Reservation {
 
     @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
-
 }
