@@ -7,6 +7,6 @@ import java.util.List;
 public interface ReservationService {
     CreateReservationResponse createReservation(CreateReservationRequest request) throws Exception;
 
-    // ¡DEBO AGREGAR ESTA LÍNEA!
+
     List<CreateReservationResponse> getAllReservations();
 }
