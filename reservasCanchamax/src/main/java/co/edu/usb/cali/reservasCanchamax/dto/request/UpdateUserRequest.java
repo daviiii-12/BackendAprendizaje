@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateCourtRequest {
+public class UpdateUserRequest {
 
-    private String name;
-    private String location;
+    private String fullName;
+    private String email;
+    private String phone;
+    private Boolean isActive; // Breve, por si toca suspender al usuario
 
 }

@@ -22,7 +22,7 @@ import java.sql.Timestamp;
 public class Court {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // SERIAL en PostgreSQL
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "name", nullable = false, length = 120)

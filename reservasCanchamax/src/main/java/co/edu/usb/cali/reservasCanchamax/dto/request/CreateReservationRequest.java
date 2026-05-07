@@ -28,9 +28,4 @@ public class CreateReservationRequest {
     // Notas adicionales (ej: "Llevaré mi propio balón", "Necesito petos")
     private String notes;
 
-    /* * ¿Por qué omitimos el resto?
-     * - id: La base de datos lo genera solo (GenerationType.IDENTITY).
-     * - status: El backend debería ponerlo por defecto en "BOOKED" o "PENDIENTE" al crearla.
-     * - createdAt / updatedAt: El backend pone la fecha y hora exacta en la que se guardó.
-     */
 }

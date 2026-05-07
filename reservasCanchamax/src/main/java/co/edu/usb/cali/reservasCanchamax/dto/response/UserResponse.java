@@ -7,11 +7,12 @@ import java.sql.Timestamp;
 
 @Getter
 @Builder
-public class CourtResponse {
+public class UserResponse {
 
     private Integer id;
-    private String name;
-    private String location;
+    private String fullName;
+    private String email;
+    private String phone;
     private Boolean isActive;
     private Timestamp createdAt;
     private Timestamp updatedAt;

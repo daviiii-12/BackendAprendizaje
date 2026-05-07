@@ -1,15 +1,13 @@
 package co.edu.usb.cali.reservasCanchamax.controller;
 
-import co.edu.usb.cali.reservasCanchamax.dto.request.CreateUserRequest; // <-- Importante: DTO de request
-import co.edu.usb.cali.reservasCanchamax.dto.response.GetUserResponse;
-import co.edu.usb.cali.reservasCanchamax.mapper.UserMapper;
-import co.edu.usb.cali.reservasCanchamax.model.User;
-import co.edu.usb.cali.reservasCanchamax.repositorio.UserRepositorio;
-import co.edu.usb.cali.reservasCanchamax.service.UserService; // <-- Importante: Tu nuevo Service
+import co.edu.usb.cali.reservasCanchamax.dto.request.CreateUserRequest;
+import co.edu.usb.cali.reservasCanchamax.dto.request.UpdateUserRequest;
+import co.edu.usb.cali.reservasCanchamax.dto.response.UserResponse;
+import co.edu.usb.cali.reservasCanchamax.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*; // <-- Cambiamos a * para que traiga GetMapping, PostMapping, RequestBody, etc.
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,43 +16,57 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepositorio userRepositorio;
-    private final UserService userService; // <-- 1. Agregamos tu Service aquí
+    private final UserService userService;
 
     @GetMapping("/ping")
-    public String ping(){
+    public String ping() {
         return "pong";
     }
 
     @GetMapping("/all")
-    public List<GetUserResponse> getAllUsers(){
-        List<User> users = userRepositorio.findAll();
-        List<GetUserResponse> usersResponse = UserMapper.entityToListGetUserResponse(users);
-        return usersResponse;
+    public List<UserResponse> getAllUsers() {
+        // Nada de repositorios acá, todo se lo tiramos al Service
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetUserResponse> getUserById(@PathVariable int id){
-        User user = userRepositorio.getReferenceById(id);
-        GetUserResponse userResponse = UserMapper.entityToGetUserResponse(user);
-
+    public ResponseEntity<UserResponse> getUserById(@PathVariable Integer id) throws Exception {
+        UserResponse userResponse = userService.getUserById(id);
         return new ResponseEntity<>(
                 userResponse,
                 HttpStatus.OK
         );
     }
 
-
     @PostMapping("/create")
-    public ResponseEntity<GetUserResponse> createUser(@RequestBody CreateUserRequest createUserRequest) throws Exception {
-
-        // Le pasamos la petición al Service para que haga la magia
-        GetUserResponse userCreated = userService.createUser(createUserRequest);
-
-        // Retornamos 201 CREATED
+    public ResponseEntity<UserResponse> createUser(
+            @RequestBody CreateUserRequest createUserRequest
+    ) throws Exception {
+        UserResponse userCreated = userService.createUser(createUserRequest);
         return new ResponseEntity<>(
                 userCreated,
                 HttpStatus.CREATED
+        );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserResponse> updateUser(
+            @PathVariable Integer id,
+            @RequestBody UpdateUserRequest updateUserRequest
+    ) throws Exception {
+        UserResponse userUpdated = userService.updateUser(id, updateUserRequest);
+        return new ResponseEntity<>(
+                userUpdated,
+                HttpStatus.OK
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Integer id) throws Exception {
+        userService.deleteUser(id);
+        return new ResponseEntity<>(
+                "Usuario eliminado correctamente",
+                HttpStatus.OK
         );
     }
 }

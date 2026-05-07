@@ -8,15 +8,14 @@ import java.util.List;
 
 public interface CourtService {
 
-    CourtResponse createCourt(CreateCourtRequest request);
+    // A lo bien, todo toca avisar que puede fallar con el throws Exception
+    CourtResponse createCourt(CreateCourtRequest createCourtRequest) throws Exception;
+
     List<CourtResponse> getAllCourts();
-    CourtResponse updateCourt(Integer id, UpdateCourtRequest request);
 
+    CourtResponse getCourtById(Integer id) throws Exception;
 
-    // Prometo buscar una sola cancha si me dan su ID
-    CourtResponse getCourtById(Integer id);
+    CourtResponse updateCourt(Integer id, UpdateCourtRequest updateCourtRequest) throws Exception;
 
-    // Prometo borrar una cancha si me dan su ID.
-    // Uso 'void' porque cuando borro algo, no devuelvo datos, solo lo elimino.
-    void deleteCourt(Integer id);
+    void deleteCourt(Integer id) throws Exception;
 }
