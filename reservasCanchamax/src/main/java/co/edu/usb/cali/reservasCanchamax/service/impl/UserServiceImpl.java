@@ -47,19 +47,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception("Paila, ese correo ya está registrado en el sistema");
         }
 
-        // Generamos la marca de tiempo exacta del servidor para auditoría.
-        Timestamp now = new Timestamp(System.currentTimeMillis());
-
-        // 3. CONSTRUCCIÓN MANUAL DE LA ENTIDAD: Usamos el Patrón Builder.
-
-        User user = User.builder()
-                .fullName(request.getFullName())
-                .email(request.getEmail())
-                .phone(request.getPhone())
-                .isActive(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
+        User user = UserMapper.createUserRequestToUser(request);
 
         // 4. PERSISTENCIA: Guardamos en base de datos.
         user = userRepositorio.save(user);
@@ -161,7 +149,6 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new Exception("No se encontró el usuario con id " + id));
 
         // Ejecutamos el borrado físico.
-        // Nota para la expo: Si tiene reservas, la llave foránea de PostgreSQL frenará este delete automático.
         userRepositorio.delete(user);
     }
 }

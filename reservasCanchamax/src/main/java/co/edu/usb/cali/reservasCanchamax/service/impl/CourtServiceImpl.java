@@ -14,16 +14,18 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Objects;
 
+// @Service: Aquí es donde vive la verdadera lógica de negocio de las Canchas.
 @Service
-@AllArgsConstructor // El profe usa este, nada de RequiredArgsConstructor
+@AllArgsConstructor
 public class CourtServiceImpl implements CourtService {
 
+    // Único punto de acceso a la base de datos de canchas.
     private final CourtRepositorio courtRepositorio;
 
     @Override
     public CourtResponse createCourt(CreateCourtRequest createCourtRequest) throws Exception {
 
-        // Parcero, aquí arranca el filtro manual de la vieja escuela
+        // 1. FILTRO MANUAL: Validamos estrictamente que la data de entrada sea correcta.
         if (Objects.isNull(createCourtRequest)) {
             throw new Exception("El objeto CreateCourtRequest no puede ser nulo");
         }
@@ -36,37 +38,31 @@ public class CourtServiceImpl implements CourtService {
             throw new Exception("El nombre soporta hasta 120 caracteres");
         }
 
-        // Armamos la hora exacta en la que se está creando la vuelta
-        Timestamp now = new Timestamp(System.currentTimeMillis());
+        Court court = CourtMapper.createCourtRequestToCourt(createCourtRequest);
 
-        // Como quitamos la magia del mapper para crear, lo armamos a mano aquí
-        Court court = Court.builder()
-                .name(createCourtRequest.getName())
-                .location(createCourtRequest.getLocation())
-                .isActive(true) // Nace vivita y coleando
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
-
+        // 3. Persistimos en PostgreSQL.
         court = courtRepositorio.save(court);
 
+        // 4. Devolvemos el DTO empacado.
         return CourtMapper.entityToCourtResponse(court);
     }
 
     @Override
     public List<CourtResponse> getAllCourts() {
         List<Court> courts = courtRepositorio.findAll();
-        // Usamos el método nuevecito del mapper
+        // Usamos el método de la lista del Mapper
         return CourtMapper.entityToListCourtResponse(courts);
     }
 
     @Override
     public CourtResponse getCourtById(Integer id) throws Exception {
 
+        // Validación preventiva para que la base de datos no trabaje en vano con IDs falsos.
         if (id == null || id <= 0) {
             throw new Exception("El id es requerido y debe ser mayor a 0");
         }
 
+        // orElseThrow nos permite cortar la ejecución elegantemente si no existe.
         Court court = courtRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("No se encontró la cancha con id " + id));
 
@@ -76,7 +72,7 @@ public class CourtServiceImpl implements CourtService {
     @Override
     public CourtResponse updateCourt(Integer id, UpdateCourtRequest updateCourtRequest) throws Exception {
 
-        // El mero try-catch que le fascina al profe
+        // Encapsulamos en un try-catch para capturar cualquier fallo durante la actualización.
         try {
 
             if (id == null || id <= 0) {
@@ -87,19 +83,18 @@ public class CourtServiceImpl implements CourtService {
                 throw new Exception("El objeto UpdateCourtRequest no puede ser nulo");
             }
 
+            // Consultamos la cancha original
             Court court = courtRepositorio.findById(id)
                     .orElseThrow(() -> new Exception("No se encontró la cancha con id " + id));
 
-            // Solo actualiza si el man mandó algo en el JSON, sino, lo ignora
+            // PATCHING MANUAL: Solo modificamos en la base de datos lo que el cliente nos envió explícitamente.
             if (updateCourtRequest.getName() != null) {
                 if (updateCourtRequest.getName().isBlank()) {
                     throw new Exception("El nombre no puede estar vacío");
                 }
-
                 if (updateCourtRequest.getName().length() > 120) {
                     throw new Exception("El nombre soporta hasta 120 caracteres");
                 }
-
                 court.setName(updateCourtRequest.getName());
             }
 
@@ -114,7 +109,7 @@ public class CourtServiceImpl implements CourtService {
                 court.setIsActive(updateCourtRequest.getIsActive());
             }
 
-            // Actualizamos la hora para que quede constancia del movimiento
+            // Marcamos la hora en que se hizo este cambio
             court.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
             court = courtRepositorio.save(court);
@@ -122,7 +117,7 @@ public class CourtServiceImpl implements CourtService {
             return CourtMapper.entityToCourtResponse(court);
 
         } catch (Exception e) {
-            // Si estalla algo, lo tira p'arriba
+            // Relanzamos la excepción para el controlador
             throw e;
         }
     }
@@ -137,7 +132,8 @@ public class CourtServiceImpl implements CourtService {
         Court court = courtRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("No se encontró la cancha con id " + id));
 
-        // El man la borra de frente usando la entidad, así que le hacemos caso
+   
+        // si la cancha ya tiene reservas amarradas).
         courtRepositorio.delete(court);
     }
 }

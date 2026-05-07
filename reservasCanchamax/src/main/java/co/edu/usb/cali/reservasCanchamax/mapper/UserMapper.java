@@ -1,8 +1,10 @@
 package co.edu.usb.cali.reservasCanchamax.mapper;
 
+import co.edu.usb.cali.reservasCanchamax.dto.request.CreateUserRequest;
 import co.edu.usb.cali.reservasCanchamax.dto.response.UserResponse;
 import co.edu.usb.cali.reservasCanchamax.model.User;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 // Su única responsabilidad es coger los datos de la Entidad (base de datos)
@@ -42,5 +44,20 @@ public class UserMapper {
                 .map(UserMapper::entityToUserResponse)
                 // .toList() vuelve a empaquetar
                 .toList();
+    }
+
+    public static User createUserRequestToUser(CreateUserRequest createUserRequest) {
+        // Generamos la marca de tiempo exacta del servidor para auditoría.
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+
+        User user = User.builder()
+                .fullName(createUserRequest.getFullName())
+                .email(createUserRequest.getEmail())
+                .phone(createUserRequest.getPhone())
+                .isActive(true)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+        return user;
     }
 }
