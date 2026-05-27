@@ -132,7 +132,7 @@ public class CourtServiceImpl implements CourtService {
         Court court = courtRepositorio.findById(id)
                 .orElseThrow(() -> new Exception("No se encontró la cancha con id " + id));
 
-   
+
         // si la cancha ya tiene reservas amarradas).
         courtRepositorio.delete(court);
     }

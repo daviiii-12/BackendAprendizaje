@@ -4,6 +4,7 @@ import co.edu.usb.cali.reservasCanchamax.dto.request.CreateUserRequest;
 import co.edu.usb.cali.reservasCanchamax.dto.request.UpdateUserRequest;
 import co.edu.usb.cali.reservasCanchamax.dto.response.UserResponse;
 import co.edu.usb.cali.reservasCanchamax.service.UserService;
+import jakarta.validation.Valid; // <-- IMPORTANTE: Este es el nuevo import para el @Valid
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,11 +57,11 @@ public class UserController {
     // Ruta: POST /users/create
     @PostMapping("/create")
     public ResponseEntity<UserResponse> createUser(
-            // @RequestBody atrapa el paquete JSON que viene desde Bruno y lo convierte en el objeto CreateUserRequest
-            @RequestBody CreateUserRequest createUserRequest
+            // ¡AQUÍ ESTÁ LA MAGIA! Agregamos @Valid antes del @RequestBody
+            @Valid @RequestBody CreateUserRequest createUserRequest
     ) throws Exception {
 
-        // El servicio hace todas las validaciones (ifs) y lo guarda
+        // El servicio procesa la creación en BD
         UserResponse userCreated = userService.createUser(createUserRequest);
 
         // Retornamos el usuario creado con un estado 201 (CREATED), que es el estándar para cuando nace un registro nuevo.
@@ -75,8 +76,8 @@ public class UserController {
     public ResponseEntity<UserResponse> updateUser(
             // Sacamos el ID a actualizar de la URL...
             @PathVariable Integer id,
-            // ... y sacamos los datos nuevos del cuerpo de la petición (JSON)
-            @RequestBody UpdateUserRequest updateUserRequest
+            // Agregamos @Valid también al actualizar para blindar la entrada
+            @Valid @RequestBody UpdateUserRequest updateUserRequest
     ) throws Exception {
 
         // Le pasamos ambas cosas al servicio para que haga el match y actualice
